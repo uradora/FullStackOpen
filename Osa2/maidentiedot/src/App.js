@@ -168,6 +168,7 @@ const Weather = ({ capital, api_key }) => {
       `http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`
     )
     .then((response) => {
+      console.log(response.data)
       const res = response.data;
       const temperature = res.current.temperature;
       const wind = res.current.wind_speed;
