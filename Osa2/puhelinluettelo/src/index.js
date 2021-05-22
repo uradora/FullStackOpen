@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Person from './components/Person'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -33,9 +34,14 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+
     }
   }
 
