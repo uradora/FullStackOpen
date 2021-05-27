@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs/ 
+Content-Type: application/json 
+
+{
+"title": "Bearded Dragon Care 101: A Beginner's Guide", 
+"author": "Teeriddle", 
+"url": "https://pethelpful.com/reptiles-amphibians/beginners-guide-keeping-bearded-dragon", "likes": 11
+}
+
