@@ -92,8 +92,20 @@ const App = () => {
           setTimeout(() => {
             setMessage({ text: null, isError: false })
           }, 5000)
+          console.log(persons)
           setNewName('')
           setNewNumber('')
+        })
+        .catch(error => {
+          const errorMessage = error.response.data.error
+          console.log(error)
+          setMessage({
+            text: `'${errorMessage}`,
+            isError: true
+          })
+          setTimeout(() => {
+            setMessage({ text: null, isError: false })
+          }, 5000)
         })
     }
   }
