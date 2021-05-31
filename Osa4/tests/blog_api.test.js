@@ -88,6 +88,58 @@ test('blogs have id and not _id', async () => {
   expect(results[0]).toBeDefined()
 })
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'Merin',
+    author: 'Meri',
+    url: 'https://unsummonedthoughts.wordpress.com/author/unsummonedthoughts/',
+    likes: 1,
+  }
+
+  const res = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const results = response.body.map((r) => r.title);
+
+  expect(response.body).toHaveLength(initialBlogs.length + 1)
+  expect(results).toContain('Merin')
+})
+
+test('an added blog with no likes given has 0 likes', async () => {
+  const newBlog = {
+    title: 'Merin',
+    author: 'Meri',
+    url: 'https://unsummonedthoughts.wordpress.com/author/unsummonedthoughts/',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const result = response.body.find((r) => r.title === 'Merin')
+
+  expect(result.likes).toBe(0)
+})
+
+test('blog is not added if it doesn\'t contain title and url', async () => {
+  const newBlog = {
+    title: 'Merin',
+    author: 'Meri',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
