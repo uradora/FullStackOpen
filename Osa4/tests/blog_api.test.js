@@ -59,12 +59,33 @@ const initialBlogs = [
   },
 ] 
 
+let token
+let decodedToken
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
   const blogObjects = initialBlogs.map((blog) => new Blog(blog))
   const promiseArray = blogObjects.map((blog) => blog.save())
   await Promise.all(promiseArray)
+
+  const loginUser = {
+    username: 'aka',
+    password: 'paws',
+  };
+
+  const response = await api.post('/api/login').send(loginUser).expect(200);
+
+  token = JSON.parse(response.text).token
+})
+
+test('login functions', async () => {
+  const loginUser = {
+    username: 'aka',
+    password: 'paws',
+  }
+
+  const response = await api.post('/api/login').send(loginUser).expect(200)
 })
 
 test('blogs are returned as json', async () => {
@@ -96,10 +117,11 @@ test('a valid blog can be added', async () => {
     likes: 1,
   }
 
-  const res = await api
+  await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect('Content-Type', /application\/json/)
+    .set('Authorization', 'Bearer ' + token)
+    .expect(200)
 
   const response = await api.get('/api/blogs')
 
@@ -119,6 +141,7 @@ test('an added blog with no likes given has 0 likes', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', 'Bearer ' + token)
     .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
@@ -137,6 +160,7 @@ test('blog is not added if it doesn\'t contain title and url', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', 'Bearer ' + token)
     .expect(400)
 })
 
