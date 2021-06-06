@@ -3,9 +3,9 @@ Content-Type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFrYSIsImlkIjoiNjBiNTA0OWQ4ZjE5YjcxMmU2NDMyMDBlIiwiaWF0IjoxNjIyNDg4MjU4fQ.IdoqACGHgRak7UiIVXluMzpAZ0pxItLOMM_mI7HXcd0
 
 {
-  "title": "Uuninpankkopoika", 
-  "author": "Saku Timonen", 
-  "url": "https://blogit.apu.fi/uuninpankkopoikasakutimonen/", 
+  "title": "Uusi", 
+  "author": "Uus", 
+  "url": "uusi.fi/", 
   "likes": 14
 }
 

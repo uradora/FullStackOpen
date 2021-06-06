@@ -15,10 +15,16 @@ const App = () => {
   const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    fetchBlogs()
   }, [])
+
+  const fetchBlogs = async () => {
+    const blogs = await blogService.getAll()
+      blogs.sort((blog, next) => {
+        return next.likes - blog.likes
+      })
+      setBlogs( blogs )
+  }
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')

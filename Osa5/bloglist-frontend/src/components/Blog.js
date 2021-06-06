@@ -9,8 +9,6 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
     marginBottom: 5,
   }
 
-  console.log(currentUser.id)
-
   const [showAll, setShowAll] = useState(false)
 
   const hideWhenVisible = { display : showAll ? 'none' : '' }
@@ -18,12 +16,12 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const showIfCorrectUser = { display : blog.user.id === currentUser.id ? '' : 'none' }
   
   return (
-    <div style={blogStyle}>
+    <div className='basicInfo' style={blogStyle}>
       {blog.title}  {blog.author}
       <div style={hideWhenVisible}>
         <button onClick={() => setShowAll(true)}>view</button>
       </div>
-      <div style={showWhenVisible}>
+      <div className='moreInfo' style={showWhenVisible}>
         <div>
           {blog.url}
         </div>
