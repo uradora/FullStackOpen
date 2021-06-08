@@ -20,7 +20,7 @@ const AddBlogForm = ({ createBlog }) => {
   }
   return (
     <div>
-    <h2>create new</h2>
+      <h2>create new</h2>
       <div>
         <form onSubmit={addBlog} id='form' >
           <div>

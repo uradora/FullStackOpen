@@ -45,7 +45,7 @@ describe('blog content', () => {
     )
   })
 
-  test(`doesn't render url and likes by default`, () => {
+  test('doesn\'t render url and likes by default', () => {
     const div = component.container.querySelector('.moreInfo')
 
     expect(div).toHaveTextContent(

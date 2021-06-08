@@ -14,7 +14,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const hideWhenVisible = { display : showAll ? 'none' : '' }
   const showWhenVisible = { display : showAll ? '' : 'none' }
   const showIfCorrectUser = { display : blog.user.id === currentUser.id ? '' : 'none' }
-  
+
   return (
     <div className='basicInfo' style={blogStyle}>
       {blog.title}  {blog.author}
@@ -37,7 +37,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
         </div>
         <button onClick={() => setShowAll(false)}>hide</button>
       </div>
-  </div>  
+    </div>
   )
 }
 

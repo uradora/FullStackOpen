@@ -9,9 +9,9 @@ import './index.css'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState({ text: null, isError: false })
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null) 
+  const [user, setUser] = useState(null)
   const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   useEffect(() => {
@@ -20,10 +20,10 @@ const App = () => {
 
   const fetchBlogs = async () => {
     const blogs = await blogService.getAll()
-      blogs.sort((blog, next) => {
-        return next.likes - blog.likes
-      })
-      setBlogs( blogs )
+    blogs.sort((blog, next) => {
+      return next.likes - blog.likes
+    })
+    setBlogs( blogs )
   }
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -49,14 +49,14 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
       setMessage({ text: `'${user.username}' logged in`, isError: false })
-        setTimeout(() => {
-          setMessage({ text: null, isError: false })
-        }, 5000)
+      setTimeout(() => {
+        setMessage({ text: null, isError: false })
+      }, 5000)
       setUsername('')
       setPassword('')
     } catch (exception) {
       setMessage({
-        text: `login failed`,
+        text: 'login failed',
         isError: true,
       })
       setTimeout(() => {
@@ -69,23 +69,23 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type='text'
           value={username}
           name='Username'
           onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-            <input
-            type='password'
-            value={password}
-            name='Password'
-            onChange={({ target}) => setPassword(target.value)}
-            />
-        </div>
-        <button type='submit'>login</button>
+        />
+      </div>
+      <div>
+        password
+        <input
+          type='password'
+          value={password}
+          name='Password'
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type='submit'>login</button>
     </form>
   )
 
@@ -105,12 +105,12 @@ const App = () => {
           isError: false,
         })
         setTimeout(() => {
-          setMessage({ text: null, isError: false });
+          setMessage({ text: null, isError: false })
         }, 5000)
       })
-      .catch(exception => {
+      .catch(() => {
         setMessage({
-          text: `add blog failed`,
+          text: 'add blog failed',
           isError: true,
         })
         setTimeout(() => {
@@ -140,12 +140,12 @@ const App = () => {
           isError: false,
         })
         setTimeout(() => {
-          setMessage({ text: null, isError: false });
+          setMessage({ text: null, isError: false })
         }, 5000)
       })
-      .catch(exception => {
+      .catch(() => {
         setMessage({
-          text: `adding like failed`,
+          text: 'adding like failed',
           isError: true,
         })
         setTimeout(() => {
@@ -166,12 +166,12 @@ const App = () => {
           isError: false,
         })
         setTimeout(() => {
-          setMessage({ text: null, isError: false });
+          setMessage({ text: null, isError: false })
         }, 5000)
       })
-      .catch(exception => {
+      .catch(() => {
         setMessage({
-          text: `remove failed`,
+          text: 'remove failed',
           isError: true,
         })
         setTimeout(() => {
@@ -203,8 +203,8 @@ const App = () => {
         </div>
         <div>
           {blogs.map(blog =>
-            <Blog key={blog.id} 
-              blog={blog} 
+            <Blog key={blog.id}
+              blog={blog}
               addLike={addLike}
               currentUser={user}
               removeBlog={removeBlog}
