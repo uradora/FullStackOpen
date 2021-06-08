@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
+const Blog = ({ blog, addLike, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,7 +13,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
 
   const hideWhenVisible = { display : showAll ? 'none' : '' }
   const showWhenVisible = { display : showAll ? '' : 'none' }
-  const showIfCorrectUser = { display : blog.user.id === currentUser.id ? '' : 'none' }
+  const showIfCorrectUser = { display : window.localStorage.getItem('loggedInUser').username === blog.user.username ? '' : 'none' }
 
   return (
     <div className='basicInfo' style={blogStyle}>

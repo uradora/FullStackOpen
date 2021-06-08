@@ -70,6 +70,7 @@ const App = () => {
       <div>
         username
         <input
+          id='username'
           type='text'
           value={username}
           name='Username'
@@ -79,13 +80,14 @@ const App = () => {
       <div>
         password
         <input
+          id='password'
           type='password'
           value={password}
           name='Password'
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type='submit'>login</button>
+      <button id='login-button' type='submit'>login</button>
     </form>
   )
 
@@ -155,6 +157,8 @@ const App = () => {
   }
 
   const removeBlog = (blogToRemove) => {
+    console.log(blogToRemove.user.id)
+    console.log(user.id)
     blogService
       .remove(blogToRemove.id)
       .then(() => {
@@ -206,7 +210,6 @@ const App = () => {
             <Blog key={blog.id}
               blog={blog}
               addLike={addLike}
-              currentUser={user}
               removeBlog={removeBlog}
             />
           )}
