@@ -6,15 +6,12 @@ import { notificationChange, clearNotification } from '../reducers/notificationR
 const AnecdoteForm = () => {
   const dispatch = useDispatch()
 
-  const newAnecdote = (event) => {
+  const newAnecdote = async (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
     dispatch(addAnecdote(content))
-    dispatch(notificationChange(`you created ${content}`))
-    setTimeout(() => {
-      dispatch(clearNotification())
-    }, 5000)
+    dispatch(notificationChange(`you created ${content}`), 5000)
   }
 
   return (
