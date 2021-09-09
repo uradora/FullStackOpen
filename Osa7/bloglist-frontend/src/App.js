@@ -1,30 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
-import Notification from './components/Notification'
+import { createNotification, removeNotification } from './reducers/notificationReducer'
+import { createBlog, likeBlog, deleteBlog, initializeBlogs } from './reducers/blogReducer'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import AddBlogForm from './components/AddBlogForm'
+import { useSelector, useDispatch } from 'react-redux'
 import './index.css'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [message, setMessage] = useState({ text: null, isError: false })
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
-  useEffect(() => {
-    fetchBlogs()
-  }, [])
+  const dispatch = useDispatch()
+  const notification = useSelector(state => state.notification)
+  const blogs = useSelector(state => state.blogs)
 
-  const fetchBlogs = async () => {
-    const blogs = await blogService.getAll()
-    blogs.sort((blog, next) => {
-      return next.likes - blog.likes
-    })
-    setBlogs( blogs )
-  }
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [blogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
@@ -48,19 +44,18 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setMessage({ text: `'${user.username}' logged in`, isError: false })
+      const notification = { text: `'${user.username}' logged in`, isError: false }
+      dispatch(createNotification({ notification }))
       setTimeout(() => {
-        setMessage({ text: null, isError: false })
+        dispatch(removeNotification())
       }, 5000)
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setMessage({
-        text: 'login failed',
-        isError: true,
-      })
+      const notification = { text: 'login failed', isError: true }
+      dispatch(createNotification({ notification }))
       setTimeout(() => {
-        setMessage({ text: null, isError: false })
+        dispatch(removeNotification())
       }, 5000)
     }
   }
@@ -101,22 +96,18 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setMessage({
-          text: `a new blog ${blogObject.title} added`,
-          isError: false,
-        })
+        dispatch(createBlog({ returnedBlog }))
+        const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
       .catch(() => {
-        setMessage({
-          text: 'add blog failed',
-          isError: true,
-        })
+        const notification = { text: 'add blog failed', isError: true }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
   }
@@ -130,56 +121,46 @@ const App = () => {
       title: blogToUpdate.title,
       url: blogToUpdate.url,
     }
-
+    console.log(user)
+    console.log(blogToUpdate.user.id)
     blogService
       .update(blogToUpdate)
       .then((updatedBlog) => {
-        setBlogs(blogs.map((blog) =>
-          blog.id !== blogToUpdate.id ? blog : updatedBlog)
-        )
-        setMessage({
-          text: `like added for ${blogToUpdate.title}`,
-          isError: false,
-        })
+        dispatch(likeBlog({ updatedBlog }))
+        const notification = { text: `like added for ${updatedBlog.title}`, isError: false }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
       .catch(() => {
-        setMessage({
-          text: 'adding like failed',
-          isError: true,
-        })
+        const notification = { text: 'adding like failed', isError: true }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
   }
 
   const removeBlog = (blogToRemove) => {
-    console.log(blogToRemove.user.id)
+    console.log(blogToRemove.user)
     console.log(user.id)
     blogService
       .remove(blogToRemove.id)
       .then(() => {
-        setBlogs(blogs.filter((blog) =>
-          blog.id !== blogToRemove.id)
-        )
-        setMessage({
-          text: `${blogToRemove.title} removed`,
-          isError: false,
-        })
+        dispatch(deleteBlog({ blogToRemove }))
+        const notification = { text: `${blogToRemove.title} removed`, isError: false }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
-      .catch(() => {
-        setMessage({
-          text: 'remove failed',
-          isError: true,
-        })
+      .catch((exception) => {
+        console.log(exception)
+        const notification = { text: 'remove failed', isError: true }
+        dispatch(createNotification({ notification }))
         setTimeout(() => {
-          setMessage({ text: null, isError: false })
+          dispatch(removeNotification())
         }, 5000)
       })
   }
@@ -221,11 +202,18 @@ const App = () => {
 
   return (
     <div>
-      <Notification text={message.text} isError={message.isError} />
-      {user === null ?
-        loginForm() :
-        blogList()
-      }
+      <div>
+        {(notification !== null) &&
+          (notification.isError ? <div className='error'>{notification.text}</div>
+            : <div className='success'>{notification.text}</div>)
+        }
+      </div>
+      <div>
+        {user === null ?
+          loginForm() :
+          blogList()
+        }
+      </div>
     </div>
   )
 }
