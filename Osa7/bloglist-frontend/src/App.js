@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import { createNotification, removeNotification } from './reducers/notificationReducer'
 import { createBlog, likeBlog, deleteBlog, initializeBlogs } from './reducers/blogReducer'
+import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import AddBlogForm from './components/AddBlogForm'
 import { useSelector, useDispatch } from 'react-redux'
 import './index.css'
@@ -11,12 +11,12 @@ import './index.css'
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -25,25 +25,20 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
     if (loggedUserJSON) {
+      console.log(loggedUserJSON)
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      dispatch(initializeUser({ user }))
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      const user = await loginService.login({
-        username, password,
-      })
-
+      dispatch(loginUser(username, password))
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       )
-      blogService.setToken(user.token)
-      setUser(user)
       const notification = { text: `'${user.username}' logged in`, isError: false }
       dispatch(createNotification({ notification }))
       setTimeout(() => {
@@ -52,6 +47,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
+      console.log(exception)
       const notification = { text: 'login failed', isError: true }
       dispatch(createNotification({ notification }))
       setTimeout(() => {
@@ -87,8 +83,7 @@ const App = () => {
   )
 
   const handleLogout = () => {
-    blogService.setToken(null)
-    setUser(null)
+    dispatch(logoutUser())
     window.localStorage.removeItem('loggedInUser')
   }
 
