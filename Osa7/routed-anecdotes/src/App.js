@@ -4,7 +4,7 @@ import {
   Switch, Route, Link,
   useParams, useHistory
 } from 'react-router-dom'
-import { useField } from './hooks'
+import useField from './hooks'
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -85,15 +85,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...content.input} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...author.input} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...info.input} />
         </div>
         <button>create</button>
       </form>
