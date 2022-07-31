@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import { createNotification, removeNotification } from './reducers/notificationReducer'
-import { createBlog, likeBlog, deleteBlog, initializeBlogs } from './reducers/blogReducer'
-import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
+import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import blogService from './services/blogs'
+import loginService from './services/login'
 import AddBlogForm from './components/AddBlogForm'
 import { useSelector, useDispatch } from 'react-redux'
 import './index.css'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.user)
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -25,20 +26,25 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
     if (loggedUserJSON) {
-      console.log(loggedUserJSON)
       const user = JSON.parse(loggedUserJSON)
-      dispatch(initializeUser({ user }))
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, [dispatch])
+  }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      dispatch(loginUser(username, password))
+      const user = await loginService.login({
+        username, password,
+      })
+
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       )
+      blogService.setToken(user.token)
+      setUser(user)
       const notification = { text: `'${user.username}' logged in`, isError: false }
       dispatch(createNotification({ notification }))
       setTimeout(() => {
@@ -83,7 +89,8 @@ const App = () => {
   )
 
   const handleLogout = () => {
-    dispatch(logoutUser())
+    blogService.setToken(null)
+    setUser(null)
     window.localStorage.removeItem('loggedInUser')
   }
 
@@ -91,6 +98,7 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
+        console.log(returnedBlog)
         dispatch(createBlog({ returnedBlog }))
         const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
         dispatch(createNotification({ notification }))
@@ -107,6 +115,7 @@ const App = () => {
       })
   }
 
+
   const addLike = (blogToUpdate) => {
     blogToUpdate = {
       id: blogToUpdate.id,
@@ -116,12 +125,13 @@ const App = () => {
       title: blogToUpdate.title,
       url: blogToUpdate.url,
     }
-    console.log(user)
-    console.log(blogToUpdate.user.id)
+
     blogService
       .update(blogToUpdate)
       .then((updatedBlog) => {
-        dispatch(likeBlog({ updatedBlog }))
+        //setBlogs(blogs.map((blog) =>
+        //  blog.id !== blogToUpdate.id ? blog : updatedBlog)
+        //)
         const notification = { text: `like added for ${updatedBlog.title}`, isError: false }
         dispatch(createNotification({ notification }))
         setTimeout(() => {
@@ -138,20 +148,21 @@ const App = () => {
   }
 
   const removeBlog = (blogToRemove) => {
-    console.log(blogToRemove.user)
+    console.log(blogToRemove.user.id)
     console.log(user.id)
     blogService
       .remove(blogToRemove.id)
       .then(() => {
-        dispatch(deleteBlog({ blogToRemove }))
+        //setBlogs(blogs.filter((blog) =>
+        //  blog.id !== blogToRemove.id)
+        //)
         const notification = { text: `${blogToRemove.title} removed`, isError: false }
         dispatch(createNotification({ notification }))
         setTimeout(() => {
           dispatch(removeNotification())
         }, 5000)
       })
-      .catch((exception) => {
-        console.log(exception)
+      .catch(() => {
         const notification = { text: 'remove failed', isError: true }
         dispatch(createNotification({ notification }))
         setTimeout(() => {

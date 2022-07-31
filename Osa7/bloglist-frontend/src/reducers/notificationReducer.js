@@ -25,4 +25,3 @@ export const removeNotification = () => {
 }
 
 export default notificationReducer
-
