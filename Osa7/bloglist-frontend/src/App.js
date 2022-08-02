@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import Blogs from './components/Blogs'
 import User from './components/User'
+import SingleBlog from './components/SingleBlog'
 import {
   BrowserRouter as Router,
   Routes, Route, Link
 } from 'react-router-dom'
+import { createBlog, like, remove } from './reducers/blogReducer'
 import { createNotification, removeNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import blogService from './services/blogs'
@@ -42,6 +44,57 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const addBlog = (blogObject) => {
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        console.log(returnedBlog)
+        dispatch(createBlog(returnedBlog))
+        const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
+        dispatch(createNotification({ notification }))
+        setTimeout(() => {
+          dispatch(removeNotification())
+        }, 5000)
+      })
+      .catch(() => {
+        const notification = { text: 'add blog failed', isError: true }
+        dispatch(createNotification({ notification }))
+        setTimeout(() => {
+          dispatch(removeNotification())
+        }, 5000)
+      })
+  }
+
+  const addLike = (blogToUpdate) => {
+    blogToUpdate = {
+      id: blogToUpdate.id,
+      user: blogToUpdate.user,
+      likes: blogToUpdate.likes + 1,
+      author: blogToUpdate.author,
+      title: blogToUpdate.title,
+      url: blogToUpdate.url,
+    }
+
+    dispatch(like(blogToUpdate, blogs))
+    const notification = { text: `like added for ${blogToUpdate.title}`, isError: false }
+    dispatch(createNotification({ notification }))
+    setTimeout(() => {
+      dispatch(removeNotification())
+    }, 5000)
+  }
+
+  const removeBlog = (blogToRemove, blogs) => {
+    blogService
+      .remove(blogToRemove)
+    dispatch(remove(blogToRemove, blogs))
+    const notification = { text: `${blogToRemove.title} removed`, isError: false }
+    dispatch(createNotification({ notification }))
+    setTimeout(() => {
+      dispatch(removeNotification())
+    }, 5000)
+  }
+
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -123,8 +176,11 @@ const App = () => {
 
           <Routes>
             <Route path="/users" element={<Users users={users} />} />
-            <Route path="/" element={<Blogs blogs={blogs} user={user} />} />
+            <Route path="/" element={<Blogs blogs={blogs} user={user}
+              addBlog={addBlog} addLike={addLike} removeBlog={removeBlog} />} />
             <Route path="/users/:id" element={<User users={users} />} />
+            <Route path="/blogs/:id" element={<SingleBlog blogs={blogs} user={user}
+              addLike={addLike} removeBlog={removeBlog} />} />
 
           </Routes>
         </Router>
