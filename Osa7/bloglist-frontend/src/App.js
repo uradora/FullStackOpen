@@ -75,9 +75,9 @@ const App = () => {
       author: blogToUpdate.author,
       title: blogToUpdate.title,
       url: blogToUpdate.url,
-      comments: blogToUpdate.comments?.concat(comment) ?? []    }
-
-    dispatch(commentBlog(blogToUpdate))
+      comments: blogToUpdate.comments?.concat(comment) ?? [comment]    }
+    console.log(blogToUpdate.comments)
+    dispatch(commentBlog(blogToUpdate, comment))
     console.log(blogToUpdate.comments)
   }
 

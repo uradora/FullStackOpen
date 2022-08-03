@@ -49,6 +49,12 @@ const SingleBlog = ({ blogs, user, addLike, removeBlog, addComment }) => {
           <button id='addcomment' type='submit'>comment</button>
         </form>
       </div>
+      <div>
+        comments: {(blog.comments ?? []).map(comment =>
+          <li key='comment'>
+            {comment}
+          </li>)}
+      </div>
     </div>
   )
 
