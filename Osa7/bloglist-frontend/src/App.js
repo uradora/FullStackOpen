@@ -15,6 +15,7 @@ import { initializeUsers } from './reducers/userReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import Users from './components/Users'
 import './index.css'
+import AddBlogForm from './components/AddBlogForm'
 
 const App = () => {
 
@@ -46,24 +47,20 @@ const App = () => {
   }, [])
 
   const addBlog = (blogObject) => {
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        console.log(returnedBlog)
-        dispatch(createBlog(returnedBlog))
-        const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
-        dispatch(createNotification({ notification }))
-        setTimeout(() => {
-          dispatch(removeNotification())
-        }, 5000)
-      })
-      .catch(() => {
-        const notification = { text: 'add blog failed', isError: true }
-        dispatch(createNotification({ notification }))
-        setTimeout(() => {
-          dispatch(removeNotification())
-        }, 5000)
-      })
+    try {
+      dispatch(createBlog(blogObject))
+      const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
+      dispatch(createNotification({ notification }))
+      setTimeout(() => {
+        dispatch(removeNotification())
+      }, 5000)
+    } catch {
+      const notification = { text: 'add blog failed', isError: true }
+      dispatch(createNotification({ notification }))
+      setTimeout(() => {
+        dispatch(removeNotification())
+      }, 5000)
+    }
   }
 
   const addLike = (blogToUpdate) => {
@@ -76,7 +73,7 @@ const App = () => {
       url: blogToUpdate.url,
     }
 
-    dispatch(like(blogToUpdate, blogs))
+    dispatch(like(blogToUpdate))
     const notification = { text: `like added for ${blogToUpdate.title}`, isError: false }
     dispatch(createNotification({ notification }))
     setTimeout(() => {
@@ -84,10 +81,9 @@ const App = () => {
     }, 5000)
   }
 
-  const removeBlog = (blogToRemove, blogs) => {
-    blogService
-      .remove(blogToRemove)
-    dispatch(remove(blogToRemove, blogs))
+  const removeBlog = (blogToRemove) => {
+    dispatch(remove(blogToRemove.id))
+    blogs.map(blog => console.log(blog))
     const notification = { text: `${blogToRemove.title} removed`, isError: false }
     dispatch(createNotification({ notification }))
     setTimeout(() => {
@@ -173,7 +169,7 @@ const App = () => {
             {user.username} logged in
             <button onClick={handleLogout}>logout</button>
           </div>
-
+          <AddBlogForm createBlog={addBlog} />
           <Routes>
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/" element={<Blogs blogs={blogs} user={user}
