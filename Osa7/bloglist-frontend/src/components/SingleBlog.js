@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Container, Button } from '@mui/material'
 
 const SingleBlog = ({ blogs, user, addLike, removeBlog, addComment }) => {
 
@@ -22,20 +23,20 @@ const SingleBlog = ({ blogs, user, addLike, removeBlog, addComment }) => {
   }
 
   return (
-    <div>
+    <Container>
       <h2>{blog.title}  {blog.author}</h2>
       <div>
         {blog.url}
       </div>
       <div>
         likes {blog.likes}
-        <button onClick={() => addLike(blog)}>like</button>
+        <Button variant='outlined' onClick={() => addLike(blog)}>like</Button>
       </div>
       <div>
         added by {blog.user.name}
       </div>
       <div style={showIfCorrectUser}>
-        <button onClick={() => removeBlog(blog, blogs)}>remove</button>
+        <Button variant='outlined' onClick={() => removeBlog(blog, blogs)}>remove</Button>
       </div>
       <div>
         <form onSubmit={comment} id='form' >
@@ -46,16 +47,16 @@ const SingleBlog = ({ blogs, user, addLike, removeBlog, addComment }) => {
             name='comment'
             onChange={({ target }) => setNewComment(target.value)}
           />
-          <button id='addcomment' type='submit'>comment</button>
+          <Button variant='outlined' id='addcomment' type='submit'>comment</Button>
         </form>
       </div>
       <div>
         comments: {(blog.comments ?? []).map(comment =>
-          <li key='comment'>
+          <li key={comment}>
             {comment}
           </li>)}
       </div>
-    </div>
+    </Container>
   )
 
 }

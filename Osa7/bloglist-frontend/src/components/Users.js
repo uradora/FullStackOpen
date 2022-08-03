@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Container } from '@mui/material'
 
 const Users = ( { users } ) => {
   return (
-    <div>
+    <Container>
       <ul>
         {users.map(user =>
           <li key='user.id'>
@@ -11,7 +12,7 @@ const Users = ( { users } ) => {
           </li>
         )}
       </ul>
-    </div>
+    </Container>
   )
 }
 

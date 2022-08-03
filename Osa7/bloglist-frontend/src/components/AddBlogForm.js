@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { TextField, Button, Box } from '@mui/material'
 
 const AddBlogForm = ({ createBlog }) => {
 
@@ -25,37 +26,36 @@ const AddBlogForm = ({ createBlog }) => {
       <h2>create new</h2>
       <div>
         <form onSubmit={addBlog} id='form' >
-          <div>
-            title
-            <input
-              id='title'
+          <Box m={2} pt={3}>
+            <TextField label ='title'
+              id='author'
               type='text'
-              value={newTitle}
-              name='Title'
+              value={newAuthor}
+              name='Author'
               onChange={({ target }) => setNewTitle(target.value)}
             />
-          </div>
-          <div>
-            author
-            <input
+          </Box>
+          <Box m={2} pt={3}>
+            <TextField label ='author'
               id='author'
               type='text'
               value={newAuthor}
               name='Author'
               onChange={({ target }) => setNewAuthor(target.value)}
             />
-          </div>
-          <div>
-            url
-            <input
+          </Box>
+          <Box m={2} pt={3}>
+            <TextField label ='url'
               id='url'
               type='text'
               value={newUrl}
               name='Url'
               onChange={({ target }) => setNewUrl(target.value)}
             />
-          </div>
-          <button id='createblog' type='submit'>create</button>
+          </Box>
+          <Box m={2} pt={3}>
+            <Button variant='outlined' type='submit'>create</Button>
+          </Box>
         </form>
       </div>
     </div>

@@ -63,7 +63,9 @@ export const like = (blog) => {
 
 export const commentBlog = (blog, comment) => {
   return async dispatch => {
+    console.log('comments before backend: ' + blog.comments)
     const commentedBlog = await blogService.update(blog)
+    console.log('comments after backend: ' + commentedBlog.comments)
     dispatch ({
       type: 'ADD_COMMENT',
       data: {

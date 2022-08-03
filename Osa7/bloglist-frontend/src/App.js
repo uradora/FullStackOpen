@@ -16,12 +16,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import Users from './components/Users'
 import './index.css'
 import AddBlogForm from './components/AddBlogForm'
+import { Container, Button, TextField, Alert, Box, AppBar, Toolbar } from '@mui/material'
 
 const App = () => {
-
+/*
   const padding = {
     padding: 5
-  }
+  }*/
 
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
@@ -31,6 +32,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [addBlogFormVisible, setAddBlogFormVisible] = useState(false)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -144,25 +146,33 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-        <input
-          id='username'
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-        />
+        <Box m={2} pt={3}>
+          <TextField label ='username'
+            size='small'
+            id='username'
+            type='text'
+            value={username}
+            name='Username'
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </Box>
       </div>
       <div>
         password
-        <input
-          id='password'
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-        />
+        <Box m={2} pt={3}>
+          <TextField label ='password'
+            size='small'
+            id='password'
+            type='password'
+            value={password}
+            name='Password'
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </Box>
       </div>
-      <button id='login-button' type='submit'>login</button>
+      <Box m={2} pt={3}>
+        <Button variant='outlined' id='login-button' type='submit'>login</Button>
+      </Box>
     </form>
   )
 
@@ -174,49 +184,63 @@ const App = () => {
 
 
   const blogList = () => {
+    const hideWhenVisible = { display : addBlogFormVisible ? 'none' : '' }
+    const showWhenVisible = { display : addBlogFormVisible ? '' : 'none' }
 
     return (
       <div>
         <Router>
-          <div>
-            <Link style={padding} to="/">home</Link>
-            <Link style={padding} to="/users">users</Link>
+          <AppBar position='static'>
+            <Toolbar>
+              <Button color="inherit" component={Link} to="/">home</Button>
+              <Button color="inherit" component={Link} to="/users">users</Button>
+              <em>{user.username} logged in</em>
+              <Button variant='outlined' color='inherit' onClick={handleLogout}>logout</Button>
+            </Toolbar>
+          </AppBar>
+          <div className='flex-container'>
+            <Box m={2} pt={3}>
+              <div style={hideWhenVisible}>
+                <Button variant='outlined' onClick={() => setAddBlogFormVisible(true)}>create new blog</Button>
+              </div>
+            </Box>
+            <Box m={2} pt={3}>
+              <div style={showWhenVisible}>
+                <AddBlogForm createBlog={addBlog} />
+                <Button variant='outlined' onClick={() => setAddBlogFormVisible(false)}>cancel</Button>
+              </div>
+            </Box>
+            <Routes>
+              <Route path="/users" element={<Users users={users} />} />
+              <Route path="/" element={<Blogs blogs={blogs} user={user}
+                addBlog={addBlog} addLike={addLike} removeBlog={removeBlog} />} />
+              <Route path="/users/:id" element={<User users={users} />} />
+              <Route path="/blogs/:id" element={<SingleBlog blogs={blogs} user={user}
+                addLike={addLike} removeBlog={removeBlog} addComment={addComment} />} />
+            </Routes>
           </div>
-
-          <div>
-            {user.username} logged in
-            <button onClick={handleLogout}>logout</button>
-          </div>
-          <AddBlogForm createBlog={addBlog} />
-          <Routes>
-            <Route path="/users" element={<Users users={users} />} />
-            <Route path="/" element={<Blogs blogs={blogs} user={user}
-              addBlog={addBlog} addLike={addLike} removeBlog={removeBlog} />} />
-            <Route path="/users/:id" element={<User users={users} />} />
-            <Route path="/blogs/:id" element={<SingleBlog blogs={blogs} user={user}
-              addLike={addLike} removeBlog={removeBlog} addComment={addComment} />} />
-
-          </Routes>
         </Router>
       </div>
     )
   }
 
   return (
-    <div>
+    <Container>
       <div>
-        {(notification !== null) &&
-          (notification.isError ? <div className='error'>{notification.text}</div>
-            : <div className='success'>{notification.text}</div>)
-        }
+        <div>
+          {(notification !== null) &&
+            (notification.isError ? <Alert severity='error'>{notification.text}</Alert>
+              : <Alert severity='success'>{notification.text}</Alert>)
+          }
+        </div>
+        <div>
+          {user === null ?
+            loginForm() :
+            blogList()
+          }
+        </div>
       </div>
-      <div>
-        {user === null ?
-          loginForm() :
-          blogList()
-        }
-      </div>
-    </div>
+    </Container>
   )
 }
 

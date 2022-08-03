@@ -1,5 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { Container } from '@mui/material'
 
 const User = ({ users }) => {
 
@@ -11,7 +12,7 @@ const User = ({ users }) => {
   }
 
   return (
-    <div>
+    <Container>
       <h2> {user.name} </h2>
       <h3>added blogs</h3>
       {user.blogs.map(blog => <p key={blog.id}>
@@ -19,7 +20,7 @@ const User = ({ users }) => {
       </p>)
 
       }
-    </div>
+    </Container>
   )
 
 }
