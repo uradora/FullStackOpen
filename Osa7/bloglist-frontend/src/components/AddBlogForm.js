@@ -13,6 +13,8 @@ const AddBlogForm = ({ createBlog }) => {
       title: newTitle,
       author: newAuthor,
       url: newUrl,
+      likes: 0,
+      comments: []
     })
     setNewTitle('')
     setNewAuthor('')

@@ -4,7 +4,7 @@ const blogReducer = (state = [], action) => {
   if (action.type === 'INIT_BLOGS') {
     return action.data
   } else if (action.type === 'NEW_BLOG') {
-    return state.concat(action.data)
+    return [...state, action.data]
   } else if (action.type === 'ADD_LIKE') {
     const id = action.data.id
     const blogToLike = state.find(blog => blog.id === id)
@@ -16,6 +16,13 @@ const blogReducer = (state = [], action) => {
     return state.filter(blog =>
       blog.id !== idToDelete
     )
+  } else if (action.type === 'ADD_COMMENT') {
+    console.log(action.data)
+    const id = action.data.id
+    const blogToComment = state.find(blog => blog.id === id)
+    const commentedBlog = { ...blogToComment, comments: blogToComment.comments?.concat(action.data.comment) ?? [] }
+    return state.map(blog => blog.id !== id ? blog : commentedBlog)
+
   }
   return state
 }
@@ -49,6 +56,17 @@ export const like = (blog) => {
     dispatch ({
       type: 'ADD_LIKE',
       data: likedBlog
+    })
+  }
+}
+
+export const commentBlog = (blog) => {
+  return async dispatch => {
+    const commentedBlog = await blogService.update(blog)
+    console.log('commentedblog: ' + commentedBlog.comments)
+    dispatch ({
+      type: 'ADD_COMMENT',
+      data: commentedBlog
     })
   }
 }

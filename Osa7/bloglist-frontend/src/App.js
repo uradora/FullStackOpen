@@ -6,7 +6,7 @@ import {
   BrowserRouter as Router,
   Routes, Route, Link
 } from 'react-router-dom'
-import { createBlog, like, remove } from './reducers/blogReducer'
+import { createBlog, like, remove, commentBlog } from './reducers/blogReducer'
 import { createNotification, removeNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import blogService from './services/blogs'
@@ -48,7 +48,10 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     try {
+      console.log('blog to be created: ' + blogObject)
+      blogs.map(blog => console.log(blog))
       dispatch(createBlog(blogObject))
+      blogs.map(blog => console.log(blog))
       const notification = { text: `a new blog ${blogObject.title} added`, isError: false }
       dispatch(createNotification({ notification }))
       setTimeout(() => {
@@ -61,6 +64,21 @@ const App = () => {
         dispatch(removeNotification())
       }, 5000)
     }
+  }
+
+  const addComment = (blogToUpdate, comment) => {
+    console.log(blogToUpdate)
+    blogToUpdate = {
+      id: blogToUpdate.id,
+      user: blogToUpdate.user,
+      likes: blogToUpdate.likes,
+      author: blogToUpdate.author,
+      title: blogToUpdate.title,
+      url: blogToUpdate.url,
+      comments: blogToUpdate.comments?.concat(comment) ?? []    }
+
+    dispatch(commentBlog(blogToUpdate))
+    console.log(blogToUpdate.comments)
   }
 
   const addLike = (blogToUpdate) => {
@@ -176,7 +194,7 @@ const App = () => {
               addBlog={addBlog} addLike={addLike} removeBlog={removeBlog} />} />
             <Route path="/users/:id" element={<User users={users} />} />
             <Route path="/blogs/:id" element={<SingleBlog blogs={blogs} user={user}
-              addLike={addLike} removeBlog={removeBlog} />} />
+              addLike={addLike} removeBlog={removeBlog} addComment={addComment} />} />
 
           </Routes>
         </Router>
