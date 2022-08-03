@@ -12,7 +12,16 @@ const loginRouter = require('./controllers/login')
 
 logger.info('connecting to', config.MONGODB_URI)
 
-mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+mongoose.connect(`mongodb+srv://merirajam:sticksstones@cluster0.mtvxefs.mongodb.net/blogs?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+  .then(() => {
+    console.log(config.MONGODB_URI)
+    logger.info('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log(config.MONGODB_URI)
+    logger.error('error connection to MongoDB:', error.message)
+  })
+
 
 app.use(cors())
 app.use(express.static('build'))
