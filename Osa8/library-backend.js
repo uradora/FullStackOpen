@@ -155,7 +155,8 @@ const resolvers = {
         console.log('päädyttiin tänne')
         authors = authors.concat({ 
           name: args.author,
-          books: [book]})
+          id: uuid()
+        })
         console.log(authors)
       }
       books = books.concat(book)
