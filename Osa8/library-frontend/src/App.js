@@ -17,7 +17,9 @@ const ALL_BOOKS = gql`
   query {
     allBooks {
       title,
-      author,
+      author {
+        name
+      },
       published
     }
   }
@@ -63,6 +65,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   if (authors.loading || books.loading) {
+    console.log(books)
     return <div>loading</div>
   }
 
