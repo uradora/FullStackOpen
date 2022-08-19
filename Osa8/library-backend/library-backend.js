@@ -88,15 +88,13 @@ const resolvers = {
   },
   Book: {
     author: async (root) => {
-      console.log(root)
-      return await (await Author.find({})).filter(author => {
-        return author._id === root.author._id
+      return await (await Author.find({})).find(author => {
+        return author.name === root.author.name
       })
     }
   },
   Author: {
     bookCount: async (root) => {
-      console.log(root)
       return await Book.find( { author: { $in: root._id } } ).countDocuments()
   }},
   Mutation: {
@@ -106,6 +104,8 @@ const resolvers = {
       if (!currentUser) {
         throw new AuthenticationError('not authenticated')
       }
+      console.log('täällä')
+      console.log(args)
 
       const authorToFind = await Author.findOne({ name: args.author })
       if (!authorToFind) {

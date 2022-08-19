@@ -2,7 +2,8 @@ import { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql, useQuery, useMutation } from '@apollo/client'
+import LoginForm from './components/LoginForm'
+import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client'
 
 const ALL_AUTHORS = gql`
   query {
@@ -20,7 +21,8 @@ const ALL_BOOKS = gql`
       author {
         name
       },
-      published
+      published,
+      genres
     }
   }
 `
@@ -34,8 +36,11 @@ const ADD_BOOK = gql`
       genres: $genres
     ) {
       title
-      author
+      author {
+        name
+      }
       published
+      genres
     }
   }
 `
@@ -49,7 +54,16 @@ const SET_BIRTHYEAR = gql`
   }
 `
 
+export const LOGIN = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      value
+    }
+  }
+`
+
 const App = () => {
+  const [token, setToken] = useState(null)
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
   const [ addBook ] = useMutation(ADD_BOOK, {
@@ -63,10 +77,16 @@ const App = () => {
   })
   const [page, setPage] = useState('authors')
   const [errorMessage, setErrorMessage] = useState(null)
+  const client = useApolloClient()
 
   if (authors.loading || books.loading) {
-    console.log(books)
     return <div>loading</div>
+  }
+
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
   }
 
   const notify = (message) => {
@@ -87,6 +107,15 @@ const App = () => {
     )
   }
 
+  if (!token) {
+    return (
+      <>
+        <Notify errorMessage={errorMessage} />
+        <LoginForm setToken={setToken} setError={notify} />
+      </>
+    )
+  }
+
   return (
     <div>
       <Notify errorMessage={errorMessage} />
@@ -94,6 +123,7 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
+        <button onClick={logout}>logout</button>
       </div>
 
       <Authors show={page === 'authors'} authors={authors.data.allAuthors} setBirthYear={setBirthYear} />
@@ -101,7 +131,8 @@ const App = () => {
       <Books show={page === 'books'} books={books.data.allBooks} />
 
       <NewBook show={page === 'add'} addBook={addBook} />
-      
+  
+            
     </div>
   )
 
