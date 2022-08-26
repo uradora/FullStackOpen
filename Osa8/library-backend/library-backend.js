@@ -104,8 +104,6 @@ const resolvers = {
       if (!currentUser) {
         throw new AuthenticationError('not authenticated')
       }
-      console.log('täällä')
-      console.log(args)
 
       const authorToFind = await Author.findOne({ name: args.author })
       if (!authorToFind) {
@@ -148,8 +146,8 @@ const resolvers = {
       console.log(author)
       return author.save()
     },
-    createUser: async (root, args) => {
-      const user = new User({ username: args.username })
+    createUser: async (root, {username, favoriteGenre}) => {
+      const user = new User({ username, favoriteGenre })
 
       return user.save()
         .catch(error => {
