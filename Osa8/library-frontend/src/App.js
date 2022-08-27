@@ -4,7 +4,7 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Recommendation from './components/Recommendation'
 import LoginForm from './components/LoginForm'
-import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client'
+import { gql, useQuery, useMutation, useSubscription, useApolloClient } from '@apollo/client'
 
 const ALL_AUTHORS = gql`
   query {
@@ -67,6 +67,15 @@ export const LOGIN = gql`
     }
   }
 `
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  
+${BOOK_DETAILS}
+`
 
 const App = () => {
   const authors = useQuery(ALL_AUTHORS)
@@ -94,7 +103,7 @@ const App = () => {
     }, 10000)
   }
 
-  if (authors.loading || books.loading || userGenre.loading) {
+  if (authors.loading || books.loading || userGenre.loading || genreBooks.loading) {
     return <div>loading</div>
   }
 
@@ -116,6 +125,19 @@ const App = () => {
     )
   }
 
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.BOOK_ADDED
+      notify(`${addedBook.title} added`)
+
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(addedBook),
+        }
+      })
+
+    }
+  })
 
   if (!token) {
     return (
@@ -129,8 +151,6 @@ const App = () => {
       </div>
     )
   }
-
-  console.log(userGenre)
 
   return (
     <div>
@@ -149,7 +169,7 @@ const App = () => {
 
       <NewBook show={page === 'add'} addBook={addBook} />
 
-      <Recommendation show={page === 'recommend'} userGenre={userGenre} books={books.data.allBooks} />
+      <Recommendation show={page === 'recommend'} userGenre={userGenre.data.me.favoriteGenre} books={books.data.allBooks} />
     </div>
   )
 

@@ -13,7 +13,9 @@
     "apollo-link-context": "^1.0.20",
     "apollo-server": "^3.10.1",
     "graphql": "^16.5.0",
+    "graphql-subscriptions": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.5.2"
+    "mongoose": "^6.5.2",
+    "subscriptions-transport-ws": "^0.11.0"
   }
 }

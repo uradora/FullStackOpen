@@ -1,13 +1,27 @@
 import { useState } from "react"
+import { SET_GENRE } from "../App"
 
 const Books = (props) => {
 
-  let allGenres = []
-  allGenres = props.books.flatMap(a => [...allGenres, ...a.genres])
-  allGenres = [...new Set(allGenres)]
+  const [genreToShow, setGenreToShow] = useState(null)
+  const result = useQuery(ALL_BOOKS, {
+    onError: (error) => {
+      setError([error][0].message)
+    }
+  })
+  const [ setGenre, response ]  = useLazyQuery(SET_GENRE, {
+    onError: (error) => {
+      setError([error][0].message)
+    }
+  })
 
-  const [genreToShow, setGenreToShow] = useState('')
-  
+  useEffect(() => {
+    if (response.data) {
+      setGenre(response.data.allBooks)
+    }
+  }, [response])
+
+
   if (!props.show) {
     return null
   }

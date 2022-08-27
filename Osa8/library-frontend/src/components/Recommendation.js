@@ -17,7 +17,6 @@ const Recommendation = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          <div>
             {genreBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
@@ -25,7 +24,6 @@ const Recommendation = (props) => {
               <td>{a.published}</td>
             </tr>
           ))}
-          </div>
         </tbody>
       </table>
     </div>
